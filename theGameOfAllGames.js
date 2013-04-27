@@ -14,7 +14,7 @@ var board = {
 var plate = {
 	"width" : 250,
 	"height" : 20,
-	"x" : board.width/2,
+	"x" : board.width / 2,
 	"y" : board.height - 30
 }
 
@@ -64,7 +64,9 @@ function testRun() {
 	blockList = new Array();
 	var c = document.getElementById("gameBoard");
 	context = c.getContext("2d");
-	c.addEventListener('mousemove', function (evt) {mouse.x = evt.clientX;}, false);
+	c.addEventListener('mousemove', function(evt) {
+		mouse.x = evt.clientX;
+	}, false);
 	for ( var i = 0; i < 5; i++) {
 		new Block(1 + i, 2, "#000000");
 	}
@@ -89,6 +91,7 @@ function isWon() {
 
 function move() {
 	var newX = ball.x + ball.dx;
+	var midX = (ball.x + newX) / 2;
 	var newY = ball.y - ball.dy;
 	// Check for collisions with blocks
 	for ( var i = 0; i < blockList.length; i++) {
@@ -113,6 +116,8 @@ function move() {
 		if (ball.x > plate.x && ball.x < plate.x + plate.width) {
 			ball.dy = -ball.dy;
 			ball.y -= 2 * ball.dy;
+			var xDiff = midX - plate.x;
+			ball.dx = -5 * Math.cos(Math.PI * xDiff / plate.width);
 		}
 	}
 	ball.x += ball.dx;
@@ -127,9 +132,9 @@ function move() {
 	}
 }
 
-function movePlate(){
-	if(mouse.x >= plate.width/2 && mouse.x <= board.width - plate.width/2){
-		plate.x = mouse.x - plate.width/2;
+function movePlate() {
+	if (mouse.x >= plate.width / 2 && mouse.x <= board.width - plate.width / 2) {
+		plate.x = mouse.x - plate.width / 2;
 	}
 }
 
