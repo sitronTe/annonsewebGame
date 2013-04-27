@@ -14,8 +14,12 @@ var board = {
 var plate = {
 	"width" : 250,
 	"height" : 20,
-	"x" : board.width/2 - 125,
+	"x" : board.width/2,
 	"y" : board.height - 30
+}
+
+var mouse = {
+	"x" : 400,
 }
 
 var context;
@@ -23,13 +27,14 @@ var context;
 function testRun() {
 	var c = document.getElementById("gameBoard");
 	context = c.getContext("2d");
-
+	c.addEventListener('mousemove', function (evt) {mouse.x = evt.clientX;}, false);
 	setInterval(tick, 10);
 }
 
 function tick() {
 	move();
 	draw();
+	movePlate();
 }
 
 function move() {
@@ -49,6 +54,12 @@ function move() {
 	if (ball.y < 0 || ball.y > board.height) {
 		ball.dy = -ball.dy;
 		ball.y -= 2 * ball.dy;
+	}
+}
+
+function movePlate(){
+	if(mouse.x >= plate.width/2 && mouse.x <= board.width - plate.width/2){
+		plate.x = mouse.x - plate.width/2;
 	}
 }
 
