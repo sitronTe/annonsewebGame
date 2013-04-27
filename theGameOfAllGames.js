@@ -2,8 +2,8 @@ var ball = {
 	"r" : 5,
 	"x" : 400,
 	"y" : 600,
-	"dx" : 1,
-	"dy" : 1
+	"dx" : 3,
+	"dy" : 3
 }
 
 var board = {
@@ -28,6 +28,14 @@ function tick() {
 function move() {
 	ball.x += ball.dx;
 	ball.y -= ball.dy;
+	if (ball.x < 0 || ball.x > board.width) {
+		ball.dx = -ball.dx;
+		ball.x += 2 * ball.dx;
+	}
+	if (ball.y < 0 || ball.y > board.height) {
+		ball.dy = -ball.dy;
+		ball.y -= 2 * ball.dy;
+	}
 }
 
 function draw() {
