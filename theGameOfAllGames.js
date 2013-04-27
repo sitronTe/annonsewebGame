@@ -11,6 +11,13 @@ var board = {
 	"height" : 640
 }
 
+var plate = {
+	"width" : 250,
+	"height" : 20,
+	"x" : board.width/2 - 125,
+	"y" : board.height - 30
+}
+
 var context;
 
 function testRun() {
@@ -27,6 +34,13 @@ function tick() {
 
 function move() {
 	ball.x += ball.dx;
+	var newY = ball.y - ball.dy;
+	if(ball.y < plate.y && newY >= plate.y){
+		if(ball.x > plate.x && ball.x < plate.x + plate.width){
+			ball.dy = -ball.dy;
+			ball.y -= 2 * ball.dy;
+		}
+	}
 	ball.y -= ball.dy;
 	if (ball.x < 0 || ball.x > board.width) {
 		ball.dx = -ball.dx;
@@ -45,4 +59,6 @@ function draw() {
 	context.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2, true);
 	context.closePath();
 	context.fill();
+	context.fillStyle = "#00eeee";
+	context.fillRect(plate.x, plate.y, plate.width, plate.height);
 }
