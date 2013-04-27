@@ -28,6 +28,7 @@ var blockDimension = {
 }
 
 var score = 0;
+var life = 3;
 
 var blockList = new Array();
 
@@ -65,23 +66,46 @@ var context;
 function testRun() {
 	score = 0;
 	document.getElementById("gameScore").innerHTML = score;
+	document.getElementById("lifeLeft").innerHTML = life;
 	blockList = new Array();
 	var c = document.getElementById("gameBoard");
 	context = c.getContext("2d");
 	c.addEventListener('mousemove', function(evt) {
 		mouse.x = evt.clientX;
 	}, false);
-	for ( var i = 0; i < 5; i++) {
-		new Block(1 + i, 2, "#000000");
+	var k = 0;
+	for ( var j = 0; j < 10; j++){
+		for ( var i = 0; i < 18 - j*2; i++) {
+			new Block(1 + j + i, 2 + j, "#000000");
+		}
 	}
-
+	for ( var j = 20; j > 9; j--){
+		for ( var i = 0; i < 18 - k*2; i++) {
+			new Block(1 + k + i, 2 + j, "#000000");
+		}
+		k++;
+	}
+	
 	setInterval(tick, 10);
+}
+
+function newGame(){
+
+	ball.x = 400;
+	ball.y = 600;
+	ball.dx = 3;
+	ball.dy = 3;
+	plate.x = board.width / 2;
+	plate.y = board.height - 30;
+	testRun();
+	
 }
 
 function tick() {
 	move();
 	draw();
 	movePlate();
+	
 }
 
 function isWon() {
@@ -91,6 +115,11 @@ function isWon() {
 		}
 	}
 	return true;
+}
+
+function gameOver(){
+	//not a good solution
+	document.getElementById("body").innerHTML = "<p>Game Over</p>";
 }
 
 function move() {
@@ -126,15 +155,27 @@ function move() {
 			ball.dx = -5 * Math.cos(Math.PI * xDiff / plate.width);
 		}
 	}
+	
+	
 	ball.x += ball.dx;
 	ball.y -= ball.dy;
 	if (ball.x < 0 || ball.x > board.width) {
 		ball.dx = -ball.dx;
 		ball.x += 2 * ball.dx;
 	}
-	if (ball.y < 0 || ball.y > board.height) {
+	if (ball.y < 0) {
 		ball.dy = -ball.dy;
 		ball.y -= 2 * ball.dy;
+	}
+	if(ball.y > board.height){
+		life--;
+		if(life == 0){
+			gameOver();
+		}
+		else{
+			newGame();
+		}
+		document.getElementById("lifeLeft").innerHTML = life;
 	}
 }
 
