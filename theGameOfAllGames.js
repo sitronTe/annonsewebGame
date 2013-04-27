@@ -27,6 +27,8 @@ var blockDimension = {
 	"height" : 20
 }
 
+var score = 0;
+
 var blockList = new Array();
 
 /**
@@ -61,6 +63,8 @@ function blockCheckInside(x, y) {
 var context;
 
 function testRun() {
+	score = 0;
+	document.getElementById("gameScore").innerHTML = score;
 	blockList = new Array();
 	var c = document.getElementById("gameBoard");
 	context = c.getContext("2d");
@@ -96,7 +100,9 @@ function move() {
 	// Check for collisions with blocks
 	for ( var i = 0; i < blockList.length; i++) {
 		if (blockList[i] != null && blockList[i].isInside(newX, newY)) {
-			// Collision occured!
+			// Collision occur!
+			score += 100;
+			document.getElementById("gameScore").innerHTML = score;
 			// Check if there is collision with old x or y
 			if (blockList[i].isInside(ball.x, newY)) {
 				// Y caused collision
