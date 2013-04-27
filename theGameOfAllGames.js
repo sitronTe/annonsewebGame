@@ -19,15 +19,56 @@ var plate = {
 }
 
 var mouse = {
-	"x" : 400,
+	"x" : 400
+}
+
+var blockDimension = {
+	"width" : 40,
+	"height" : 20
+}
+
+var blockList = new Array();
+
+/**
+ * Creates a new block at location indicated. This will automatically add it to
+ * the list of blocks on the level.
+ * 
+ * @param column
+ *            column number
+ * @param row
+ *            row number
+ * @param color
+ *            color in string hex format. ("#000000" is black "#ffffff" is
+ *            white)
+ */
+function Block(column, row, color) {
+	this.color = color;
+	this.x = column * blockDimension.width;
+	this.y = row * blockDimension.height;
+	this.isInside = blockCheckInside;
+	blockList[blockList.length] = this;
+}
+
+function blockCheckInside(x, y) {
+	if (x > this.x && x < this.x + blockDimension.width) {
+		if (y > this.y && y < this.y + blockDimension.height) {
+			return true;
+		}
+	}
+	return false;
 }
 
 var context;
 
 function testRun() {
+	blockList = new Array();
 	var c = document.getElementById("gameBoard");
 	context = c.getContext("2d");
 	c.addEventListener('mousemove', function (evt) {mouse.x = evt.clientX;}, false);
+	for ( var i = 0; i < 5; i++) {
+		new Block(1 + i, 2, "#000000");
+	}
+
 	setInterval(tick, 10);
 }
 
@@ -37,15 +78,44 @@ function tick() {
 	movePlate();
 }
 
+function isWon() {
+	for ( var i = 0; i < blockList.length; i++) {
+		if (blockList[i] != null) {
+			return false;
+		}
+	}
+	return true;
+}
+
 function move() {
-	ball.x += ball.dx;
+	var newX = ball.x + ball.dx;
 	var newY = ball.y - ball.dy;
-	if(ball.y < plate.y && newY >= plate.y){
-		if(ball.x > plate.x && ball.x < plate.x + plate.width){
+	// Check for collisions with blocks
+	for ( var i = 0; i < blockList.length; i++) {
+		if (blockList[i] != null && blockList[i].isInside(newX, newY)) {
+			// Collision occured!
+			// Check if there is collision with old x or y
+			if (blockList[i].isInside(ball.x, newY)) {
+				// Y caused collision
+				ball.dy = -ball.dy;
+			} else if (blockList[i].isInside(newX, ball.y)) {
+				// X caused collision
+				ball.dx = -ball.dx;
+			} else {
+				// both needed for collision
+				ball.dy = -ball.dy;
+				ball.dx = -ball.dx;
+			}
+			blockList[i] = null;
+		}
+	}
+	if (ball.y < plate.y && newY >= plate.y) {
+		if (ball.x > plate.x && ball.x < plate.x + plate.width) {
 			ball.dy = -ball.dy;
 			ball.y -= 2 * ball.dy;
 		}
 	}
+	ball.x += ball.dx;
 	ball.y -= ball.dy;
 	if (ball.x < 0 || ball.x > board.width) {
 		ball.dx = -ball.dx;
@@ -72,4 +142,12 @@ function draw() {
 	context.fill();
 	context.fillStyle = "#00eeee";
 	context.fillRect(plate.x, plate.y, plate.width, plate.height);
+
+	for ( var i = 0; i < blockList.length; i++) {
+		if (blockList[i] != null) {
+			context.fillStyle = blockList[i].color;
+			context.fillRect(blockList[i].x - 1, blockList[i].y - 1,
+					blockDimension.width - 2, blockDimension.height - 2);
+		}
+	}
 }
